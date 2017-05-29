@@ -1,0 +1,130 @@
+
+//////////////////////////////////////////////////
+//公用查询信息
+//
+/////////////////////////////////////////////////
+//数据
+var lstdata ;
+//字段 dataFields
+var dataFieldsData;
+//显示字段信息 columns
+var columnsData;
+//定义一个全局变量，只给导出用
+var exportTableName;
+$(document).ready(function () {
+// 页面元素初始化 
+	jqxgridInit();
+});
+
+// 列表初始化
+var jqxgridInit = function jqxgridInit(){  
+	
+	//查询数据类型
+	var type = $("#queryType").text();
+    
+    var source =
+    {
+        datatype: "json",
+        datafields: [
+         { name: 'id', type: 'string' },
+            { name: 'tableNameCn', type: 'string' },
+            { name: 'tableNameEn', type: 'string' }
+        ],
+        id: 'id',
+        type:'POST',
+        url: "/MRP-MAIN/commonQuery/loadTableData?type="+type
+    };
+    
+    //adapter
+    var dataAdapter = new $.jqx.dataAdapter(source);
+    
+     //list控件初始化
+     $("#jqxListBox").jqxListBox(
+     {
+	      source: dataAdapter, 
+	      displayMember: "tableNameCn", 
+	      valueMember: "tableNameEn", 
+	      width: 160, 
+	      height: 250
+      });
+      //绑定数据完成后的事件
+      $("#jqxListBox").on('bindingComplete', function (event) {
+          var items = $("#jqxListBox").jqxListBox('getItems'); 
+          if(items.length > 0){
+	          var firstItem = items[0]; 
+	          loadColumnByTable(firstItem.value);
+          }
+      });
+      //选中下拉元素时的事件
+      $("#jqxListBox").on('select', function (event) {
+          if (event.args) {
+              var item = event.args.item;
+              if (item) {
+                  loadColumnByTable(item.value,item.label);
+              }
+          }
+      });
+    
+		
+	 /** 导出 */ 
+        $("#excelExport").jqxButton();
+        $("#excelExport").click(function () {
+			
+		 	var ds = exportTableName;
+            window.location.href="/MRP-MAIN/commonQuery/exportStatic/?ds="+ds;        
+        });
+		
+	
+    }
+    
+    function loadColumnByTable(tableName,tableNameCn){
+    	exportTableName = tableName+"@@"+tableNameCn;
+    	//查询数据库结果，给lstdata，dataFieldsData，columnsData初始化数据
+	    ajaxQuery(tableName);
+	    
+	   var sourceColumn =
+	    {
+	        datatype: "json",
+	        datafields:dataFieldsData,
+	        id: 'id',
+	        type:'POST',
+	         localData: lstdata
+	       // url: "/MRP-MAIN/staticInfoController/loadColumnData/"
+	    };
+	    
+	    var dataAdapterColumn = new $.jqx.dataAdapter(sourceColumn);
+	    $("#jqxgridColumn").jqxGrid(
+	    {
+	        width: 1100,
+	        source: dataAdapterColumn,  
+	        filterable: true,
+	        showfilterrow: true,
+	        pageable: true,
+	        autoheight: true,
+	        sortable: true,
+	        columnsresize: true,
+	        columns:columnsData
+			});
+   }
+   //ajax查询数据
+   function ajaxQuery(tableName){
+       var params = {
+            tableName:tableName
+        };
+        $.ajax({
+            url: "/MRP-MAIN/commonQuery/loadColumnData/",
+            type:'POST',                        
+            async:false,
+            data: params,
+            dataType:"json",
+		    success:function(data,textStatus){
+				lstdata=data.data;
+				dataFieldsData = data.dataFieldsLst;
+				columnsData = data.columnLst;
+				
+			},
+			error:function(error,textStatus){ 
+			}
+    	});
+    
+    }

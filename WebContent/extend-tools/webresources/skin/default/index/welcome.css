@@ -1,0 +1,55 @@
+
+#infoBoxContainer {
+	font-family: tahoma,arial,宋体;
+		width: 100%;
+		overflow: hidden;
+	}
+	
+	.infoBox {
+		width: 360px;
+		color: #000000;
+		font-size: 11pt;
+		float: left;
+		margin: 10px;
+	}
+	
+	.infoBox .head {
+		border: none;
+		border-left: 6px solid #B3B3AC;
+		background: #DEDFD4;
+		color: #9F0037;
+		font-size: 12pt;
+		font-weight: bold;
+		padding: 10px;
+	}
+	
+	.infoBox .head a {
+		color: #9F0037;
+		font-weight: bold;
+	}
+	
+	.infoBox div {
+		border: 1px solid #DEDFD4;
+		border-top: none;
+		padding: 15px 8px 15px 15px;		
+	}
+	
+	.infoBox div span {
+		display: block;
+	}
+	
+	.infoBox div span a,
+	.infoBox div span a:link,
+	.infoBox div span a:hover,
+	.infoBox div span a:active,
+	.infoBox div span a:visited {
+		color: #000;
+		margin: 0px;
+		padding: 0px;
+		border: none;
+	}
+	
+	.marketDates {
+		padding-top: 10px;
+	}
+	<!--end-->
