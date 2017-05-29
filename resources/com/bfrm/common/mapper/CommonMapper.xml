@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.knower.common.mapper.CommonMapper" >
+
+  <select id="selectMaxId" resultType="java.lang.String" parameterType="java.util.Map" >
+    SELECT * FROM (
+    select 
+    	${columnName}	
+    from ${tableName}
+    where ${columnName} like '${initial}%'
+    order by ${columnName} desc  )
+ WHERE rownum = 1
+    <!-- oracle 语句   creatby wpb -->
+     <!--   
+      SELECT * FROM (
+    select 
+    	${columnName}	
+    from ${tableName}
+    where ${columnName} like '${initial}%'
+    order by ${columnName} desc  )
+ WHERE rownum = 1
+ 
+ -->
+  </select>
+   <select id="getDataByTableName" resultType="java.util.Map" parameterType="java.util.Map" >
+    select 
+    	${columnName}	
+    from ${tableName}
+   
+  </select>
+  
+  
+</mapper>

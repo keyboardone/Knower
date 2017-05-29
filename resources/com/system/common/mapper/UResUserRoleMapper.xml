@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.common.mapper.UResUserRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.system.userrole.bean.UResUserRoleBean" >
+    <result column="ROLE_USER_ID" property="id" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="USER_CNAME" property="userCname" jdbcType="VARCHAR" />
+    <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+    <select id="selectUserRolelist" resultMap="BaseResultMap"  >
+    SELECT
+	T1.ROLE_USER_ID,
+	T1.USER_ID,
+	T3.USER_CNAME,
+	T1.ROLE_ID,
+	T2.ROLE_NAME
+FROM
+	U_RES_USER_ROLE T1
+LEFT JOIN U_AUTH_ROLE T2 ON T1.ROLE_ID = T2.ROLE_ID
+LEFT JOIN U_BASE_USER T3 ON T1.USER_ID = T3.USER_ID
+WHERE T1.ROLE_ID=#{roleId,jdbcType=VARCHAR}
+   
+  </select>
+       <insert id="insertUserRole" parameterType="com.system.userrole.bean.UResUserRoleBean" >
+    insert into U_RES_USER_ROLE 
+    (
+    	ROLE_USER_ID,USER_ID,ROLE_ID
+    )
+    values 
+    (
+	    #{id,jdbcType=VARCHAR},
+	    #{userId,jdbcType=VARCHAR},
+	    #{roleId,jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="updateUserRole" parameterType="com.system.userrole.bean.UResUserRoleBean" >
+  update U_RES_USER_ROLE
+  
+   <set >
+      <if test="id != null" >
+        id = #{id,jdbcType=VARCHAR},
+      </if>      
+      <if test="userId != null" >
+        userId = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        roleId = #{roleId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROLE_USER_ID = #{id,jdbcType=VARCHAR}
+ </update>
+ <delete id="deleteUserRolebyID" parameterType="java.lang.String" >
+    delete from U_RES_USER_ROLE
+    where ROLE_USER_ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+   <select id="selectRole" resultMap="BaseResultMap"  >
+    select ROLE_ID,ROLE_NAME
+    from U_AUTH_ROLE
+  </select>
+  <select id="selectUser" resultMap="BaseResultMap" >
+    SELECT
+	USER_ID,
+	USER_CNAME
+FROM
+	U_BASE_USER T1
+WHERE
+	T1.USER_ID NOT IN (
+		SELECT
+			USER_ID
+		FROM
+			U_RES_USER_ROLE
+	)
+  </select>
+</mapper>

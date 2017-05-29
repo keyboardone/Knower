@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.common.mapper.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.system.role.bean.RoleBean" >
+    <result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+    <result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="roleDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ROLE_ID, ROLE_NAME, DESCRIPTION
+  </sql>
+  
+    <select id="selectRolelist" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from U_AUTH_ROLE
+   
+  </select>
+       <insert id="insertRole" parameterType="com.system.role.bean.RoleBean" >
+    insert into U_AUTH_ROLE 
+    (
+    	ROLE_ID, ROLE_NAME, DESCRIPTION
+    )
+    values 
+    (
+	    #{roleId,jdbcType=VARCHAR},
+	    #{roleName,jdbcType=VARCHAR},
+	    #{roleDesc,jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="updateRole" parameterType="com.system.role.bean.RoleBean" >
+  update U_AUTH_ROLE
+  
+   <set >
+      <if test="roleName != null" >
+        ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+      </if>      
+      <if test="roleDesc != null" >
+        DESCRIPTION = #{roleDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+ </update>
+ 
+ <delete id="deleteRolebyID" parameterType="java.lang.String" >
+    delete from U_AUTH_ROLE
+    where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+ </delete>
+</mapper>

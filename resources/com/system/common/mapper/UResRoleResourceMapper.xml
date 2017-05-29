@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.common.mapper.UResRoleResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.system.common.entity.UResRoleResource" >
+    <result column="role_menu_id" property="roleMenuId" jdbcType="VARCHAR" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <result column="menu_id" property="menuId" jdbcType="VARCHAR" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="menu_parent_id" property="menuParentId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    role_menu_id, role_id, menu_id,
+    role_name, menu_name
+  </sql>
+  <select id="loadResRoleResourceData"  resultMap="BaseResultMap">
+  	SELECT 
+	T1.ROLE_MENU_ID, T1.ROLE_ID, T1.MENU_ID, T2.MENU_NAME, T3.ROLE_NAME
+	from U_RES_ROLE_RESOURCE T1
+	LEFT JOIN U_BASE_MENU T2
+	ON T1.MENU_ID=T2.MENU_ID
+	LEFT JOIN U_AUTH_ROLE T3
+	ON T1.ROLE_ID=T3.ROLE_ID
+  </select>
+  <insert id="insertResRoleResource" parameterType="com.system.common.entity.UResRoleResource" >
+    insert into U_RES_ROLE_RESOURCE 
+    (
+    	role_menu_id, role_id, menu_id
+    )
+    values 
+    ( 
+    	#{roleMenuId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{menuId,jdbcType=VARCHAR}
+    )
+  </insert>
+  <delete id="deleteResRoleResource"  parameterType="java.lang.String">
+  	delete from U_RES_ROLE_RESOURCE
+  	where role_menu_id = #{roleMenuId, jdbcType=VARCHAR}
+  </delete>
+  <update id="updateResRoleResource" parameterType="com.system.common.entity.UResRoleResource">
+  	update U_RES_ROLE_RESOURCE
+  	set 
+  	role_id = #{roleMenuId, jdbcType=VARCHAR},
+  	menu_id = #{menuId, jdbcType=VARCHAR}
+  	where role_menu_id = #{roleMenuId, jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 角色资源管理需要获取角色id和角色名称 -->
+  <select id="getRoleByRoleId" resultMap="BaseResultMap">
+  	SELECT 
+	ROLE_ID, ROLE_NAME
+	FROM U_AUTH_ROLE
+  </select>
+  
+  <!-- 角色资源管理需要获取资源id和资源名称 -->
+  <select id="getMenuByMenuId" resultMap="BaseResultMap">
+	SELECT 
+	MENU_ID, MENU_NAME, MENU_PARENT_ID
+	FROM U_BASE_MENU
+	ORDER BY MENU_PARENT_ID, MENU_ID
+  </select>	
+  
+</mapper>

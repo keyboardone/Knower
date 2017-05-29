@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.common.mapper.UBaseMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.system.common.entity.UBaseMenu" >
+    <result column="menu_id" property="menuId" jdbcType="VARCHAR" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="menu_parent_id" property="menuParentId" jdbcType="VARCHAR" />
+    <result column="lev" property="lev" jdbcType="VARCHAR" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    MENU_ID, MENU_NAME, URL, MENU_PARENT_ID, LEV, ROLE_ID
+  </sql>
+  <resultMap id="uAuthRoleUser" type="com.system.common.entity.UAuthRoleUser" >
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+     <result column="user_id" property="userId" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="uAuthRoleResource" type="com.system.common.entity.UAuthRoleResource" >
+    <result column="res_detail_value" property="resDetailValue" jdbcType="VARCHAR" />
+    <result column="object_id" property="objectId" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 查询登录用户权限下所能看到的功能 -->
+  <select id="getMenuList" resultMap="BaseResultMap" >
+	SELECT
+	T3.*
+	FROM
+	u_base_menu T3
+	WHERE
+		T3.menu_id IN 
+		(
+			SELECT T2.MENU_ID
+			FROM U_RES_ROLE_RESOURCE T2
+			WHERE T2.ROLE_ID = (
+				SELECT
+					T1.role_id
+				FROM
+					U_RES_USER_ROLE T1
+				WHERE
+					T1.user_id = #{userId,jdbcType=VARCHAR}
+			)
+	)
+  </select>
+  <!-- 显示菜单列表-->
+  <select id="getAllMenuList" resultMap="BaseResultMap" >
+   SELECT  
+   menu_id, menu_name, url, menu_parent_id, lev
+   FROM  u_base_menu
+   ORDER BY menu_parent_id, menu_id
+  </select>
+  <!-- 查询单个菜单数据 -->
+  <select id="getOneMenu" resultMap="BaseResultMap" >
+   SELECT  <include refid="Base_Column_List" />
+   FROM  u_base_menu 
+   WHERE MENU_ID=#{menuId,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.system.common.entity.UBaseMenu" >
+    insert into u_base_menu 
+    (
+    	menu_id, menu_name, url, menu_parent_id, lev
+    )
+    values 
+    (	
+    	#{menuId,jdbcType=VARCHAR}, #{menuName,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      	#{menuParentId,jdbcType=VARCHAR}, #{lev,jdbcType=VARCHAR}
+    )
+  </insert>
+  <!-- 删除菜单 校验角色资源关系表中是否有此资源 -->
+  <select id="deleteMenuCheck" resultMap="BaseResultMap" >
+   SELECT ROLE_ID
+   FROM U_RES_ROLE_RESOURCE 
+   WHERE MENU_ID=#{menuId,jdbcType=VARCHAR}
+  </select>
+  <!-- 删除菜单 -->
+  <delete id="deleteMenu" parameterType="java.lang.String">
+  	delete from u_base_menu
+  	WHERE MENU_ID=#{menuId,jdbcType=VARCHAR}
+  </delete>
+  <!-- 修改菜单 -->
+  <update id="updateMenu" parameterType="com.system.common.entity.UBaseMenu">
+  	update u_base_menu
+  	set menu_name=#{menuName,jdbcType=VARCHAR},
+  	url=#{url,jdbcType=VARCHAR},
+  	menu_parent_id=#{menuParentId,jdbcType=VARCHAR},
+  	lev=#{lev,jdbcType=VARCHAR}
+  	where menu_id=#{menuId,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>
